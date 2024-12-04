@@ -5,7 +5,7 @@ import numpy as np
 import tables
 from astropy import units as u
 from astropy.table import Table, vstack
-from cxotime import CxoTime
+from cxotime import CxoTime, convert_time_format
 from PyQt5 import QtCore as QtC
 from PyQt5 import QtGui as QtG
 from PyQt5 import QtWidgets as QtW
@@ -441,6 +441,7 @@ class StarField(QtW.QGraphicsScene):
     def get_state(self):
         return self._state
 
+    @utils.single_entry
     def set_state(self, state_name):
         # copy self.states[state_name] so self.states[state_name] is not modified
         self._state = replace(self.states[state_name])
@@ -595,12 +596,16 @@ class StarField(QtW.QGraphicsScene):
     def add_catalog(self, starcat):
         self.catalog.reset(starcat)
 
+    @utils.single_entry
     def set_attitude(self, attitude):
         """
         Set the attitude of the scene, rotating the items to the given attitude.
         """
-
-        if attitude != self._attitude:
+        # here I had the following line, and it crashed with a RecursionError
+        # if attitude != self._attitude:
+        q1 = None if self._attitude is None else self._attitude.q
+        q2 = None if attitude is None else Quat(attitude).q
+        if not np.all(q1 == q2):
             if self.catalog is not None:
                 self.catalog.set_pos_for_attitude(attitude)
 
@@ -732,8 +737,13 @@ class StarPlot(QtW.QWidget):
         self.scene.set_onboard_attitude(attitude)
 
     def set_time(self, t):
-        self._time = CxoTime(t)
-        self.scene.time = self._time
+        # making this check to avoid infinite recursion
+        t1 = None if self._time is None else self._time.date
+        t2 = None if t is None else convert_time_format(t, fmt_out="date")
+        if t1 != t2:
+            t = CxoTime(t)
+            self._time = t
+            self.scene.time = t
 
     def highlight(self, agasc_ids):
         self._highlight = agasc_ids
