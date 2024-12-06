@@ -48,11 +48,38 @@ class ProsecoView(QtW.QWidget):
         self.create_widgets()
         self.set_connections()
         self.set_layout()
+        self.add_menu()
 
         self.opts = kwargs.copy()
         self.set_parameters(**self.opts)
 
         self._auto_proseco()
+
+    def add_menu(self):
+        """
+        Add menu actions to toolbar.
+        """
+        application = QtW.QApplication.instance()
+        main_windows = [
+            w for w in application.topLevelWidgets() if isinstance(w, QtW.QMainWindow)
+        ]
+        for window in main_windows:
+            menu_bar = window.menuBar()
+            actions = [
+                action
+                for action in menu_bar.actions()
+                if action.text().replace("&", "") == "File"
+            ]
+            if actions:
+                file_menu = actions[0].menu()
+            else:
+                file_menu = menu_bar.addMenu("&File")
+            export_action = QtW.QAction("&Export Pickle", self)
+            export_action.triggered.connect(self.data.export_proseco_dialog)
+            file_menu.addAction(export_action)
+            export_action = QtW.QAction("&Export Sparkles", self)
+            export_action.triggered.connect(self.data.export_sparkles_dialog)
+            file_menu.addAction(export_action)
 
     def create_widgets(self):
         """
@@ -255,7 +282,8 @@ if __name__ == "__main__":
     kwargs = {"file": sys.argv[1]} if sys.argv[1:] else {}
     logger.setLevel("INFO")
     app = QtW.QApplication([])
-    widget = ProsecoView(**kwargs)
+    widget = QtW.QMainWindow()
+    widget.setCentralWidget(ProsecoView(**kwargs))
     widget.resize(1400, 800)
     widget.show()
     app.exec()
