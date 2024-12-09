@@ -4,7 +4,7 @@
 from PyQt5 import QtWidgets as QtW
 
 from aperoll.utils import AperollException, logger
-from aperoll.widgets.main_window import MainWindow
+from aperoll.widgets.proseco_view import ProsecoView
 
 
 def get_parser():
@@ -29,7 +29,8 @@ def main():
 
     try:
         app = QtW.QApplication([])
-        w = MainWindow(opts=vars(args))
+        w = QtW.QMainWindow()
+        w.setCentralWidget(ProsecoView(opts=vars(args)))
         w.resize(1500, 1000)
         w.show()
         app.exec()
