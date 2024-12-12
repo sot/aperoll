@@ -21,7 +21,7 @@ from aperoll.widgets.parameters import (
 )
 from aperoll.widgets.proseco_params import ProsecoParams
 from aperoll.widgets.star_plot import StarPlot
-from aperoll.widgets.starcat_view import StarcatView
+from aperoll.widgets.starcat_review import StarcatReview
 
 
 class WebPage(QtWe.QWebEnginePage):
@@ -90,7 +90,7 @@ class ProsecoView(QtW.QWidget):
         self.star_plot = StarPlot(self)
         self.star_plot.scene.state = "Proseco"
 
-        self.starcat_view = StarcatView()
+        self.starcat_review = StarcatReview()
         self.date_edit = LineEdit(self)
         self.obsid_edit = LineEdit(self)
         self.attitude_widget = AttitudeWidget(
@@ -179,7 +179,7 @@ class ProsecoView(QtW.QWidget):
 
         layout = QtW.QHBoxLayout()
         layout.addLayout(v_layout, 1)
-        layout.addWidget(self.starcat_view, 4)
+        layout.addWidget(self.starcat_review, 4)
         layout.addWidget(self.star_plot, 4)
 
         self.setLayout(layout)
@@ -247,7 +247,7 @@ class ProsecoView(QtW.QWidget):
         try:
             self.data.parameters = self.proseco_params_widget._parameters
             if self.data.proseco:
-                self.starcat_view.set_catalog(self.data.proseco["aca"])
+                self.starcat_review.set_catalog(self.data.proseco["aca"])
                 self.star_plot.set_catalog(self.data.proseco["catalog"])
         except Exception as exc:
             if interactive:
@@ -256,7 +256,7 @@ class ProsecoView(QtW.QWidget):
 
     def _reset(self):
         self.set_parameters(**self.opts)
-        self.starcat_view.reset()
+        self.starcat_review.reset()
 
     def _run_sparkles(self):
         if self.data.sparkles:

@@ -85,7 +85,7 @@ class WebPage(QtWe.QWebEnginePage):
         page.deleteLater()
 
 
-class StarcatView(QtW.QTextEdit):
+class StarcatReview(QtW.QTextEdit):
     def __init__(self, catalog=None, parent=None):
         super().__init__(parent)
         font = QtG.QFont("Courier New")  # setting a fixed-width font (close enough)
