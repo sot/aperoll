@@ -42,15 +42,17 @@ class WebPage(QtWe.QWebEnginePage):
 
 
 class ProsecoView(QtW.QWidget):
-    def __init__(self, **kwargs):  # noqa: PLR0915
+    def __init__(self, opts=None):  # noqa: PLR0915
         super().__init__()
+        opts = {} if opts is None else opts
+        opts = {k: opts[k] for k in opts if opts[k] is not None}
 
         self.create_widgets()
         self.set_connections()
         self.set_layout()
         self.add_menu()
 
-        self.opts = kwargs.copy()
+        self.opts = opts
         self.set_parameters(**self.opts)
 
         self._auto_proseco()
@@ -191,14 +193,17 @@ class ProsecoView(QtW.QWidget):
         if "file" in kwargs and (
             kwargs["file"].endswith(".pkl") or kwargs["file"].endswith(".pkl.gz")
         ):
+            logger.debug(f"Loading parameters from {kwargs['file']}")
             params = get_parameters_from_pickle(
                 kwargs["file"], obsid=kwargs.get("obsid", None)
             )
         elif "file" in kwargs and kwargs["file"].endswith(".json"):
+            logger.debug(f"Loading parameters from {kwargs['file']}")
             params = get_parameters_from_yoshi(
                 kwargs["file"], obsid=kwargs.get("obsid", None)
             )
         else:
+            logger.debug(f"Using default parameters (file={kwargs.get('file', None)})")
             params = get_default_parameters()
             # obsid is a command-line argument, so I set it here
             if "obsid" in kwargs:
