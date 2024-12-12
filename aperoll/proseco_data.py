@@ -123,7 +123,18 @@ class ProsecoData:
 
     def run_proseco(self):
         if self._parameters:
-            catalog = get_aca_catalog(**self._parameters)
+            params = self._parameters.copy()
+            # remove some optional arguments and let proseco deal with it.
+            keys = [
+                "exclude_ids_acq",
+                "include_ids_acq",
+                "exclude_ids_guide",
+                "include_ids_guide",
+            ]
+            for key in keys:
+                if not params[key]:
+                    del params[key]
+            catalog = get_aca_catalog(**params)
             aca = catalog.get_review_table()
             sparkles.core.check_catalog(aca)
 
