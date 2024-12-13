@@ -135,12 +135,12 @@ class ProsecoData:
                 if not params[key]:
                     del params[key]
             catalog = get_aca_catalog(**params)
-            aca = catalog.get_review_table()
-            sparkles.core.check_catalog(aca)
+            aca_review = catalog.get_review_table()
+            sparkles.core.check_catalog(aca_review)
 
             return {
                 "catalog": catalog,
-                "aca": aca,
+                "review_table": aca_review,
             }
         return {}
 

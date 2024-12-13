@@ -252,7 +252,7 @@ class ProsecoView(QtW.QWidget):
         try:
             self.data.parameters = self.proseco_params_widget._parameters
             if self.data.proseco:
-                self.starcat_review.set_catalog(self.data.proseco["aca"])
+                self.starcat_review.set_catalog(self.data.proseco["review_table"])
                 self.star_plot.set_catalog(self.data.proseco["catalog"])
         except Exception as exc:
             if interactive:
