@@ -21,7 +21,7 @@ from aperoll.utils import logger
 
 from .parameters import Parameters
 from .star_plot import StarPlot
-from .starcat_view import StarcatView
+from .starcat_review import StarcatReview
 
 STYLE = """
   <style>
@@ -130,13 +130,13 @@ class MainWindow(QtW.QMainWindow):
 
         self.plot = StarPlot()
         self.parameters = Parameters(**opts)
-        self.starcat_view = StarcatView()
+        self.starcat_review = StarcatReview()
 
         layout = QtW.QVBoxLayout(self._main)
         layout_2 = QtW.QHBoxLayout()
 
         layout.addWidget(self.parameters)
-        layout_2.addWidget(self.starcat_view)
+        layout_2.addWidget(self.starcat_review)
         layout_2.addWidget(self.plot)
         layout.addLayout(layout_2)
 
@@ -153,7 +153,7 @@ class MainWindow(QtW.QMainWindow):
         self.parameters.reset.connect(self._reset)
         self.parameters.draw_test.connect(self._draw_test)
         self.parameters.parameters_changed.connect(self._parameters_changed)
-        self.plot.attitude_changed.connect(self.parameters.set_ra_dec)
+        self.plot.attitude_changed_eq.connect(self.parameters.set_ra_dec)
 
         self._data = Data(self.parameters.proseco_args())
         self.outdir = Path(os.getcwd())
@@ -181,7 +181,7 @@ class MainWindow(QtW.QMainWindow):
 
         if starcat is not None:
             self.plot.set_catalog(starcat)
-            self.starcat_view.set_catalog(aca)
+            self.starcat_review.set_catalog(aca)
             # make sure the catalog is not overwritten automatically
             self.plot.scene.state.auto_proseco = False
 
@@ -215,7 +215,7 @@ class MainWindow(QtW.QMainWindow):
 
     def _reset(self):
         self.parameters.set_parameters(**self.opts)
-        self.starcat_view.reset()
+        self.starcat_review.reset()
         self._data.reset(self.parameters.proseco_args())
         self._init()
 
@@ -236,7 +236,7 @@ class MainWindow(QtW.QMainWindow):
         Display the star catalog.
         """
         if self._data.proseco:
-            self.starcat_view.set_catalog(self._data.proseco["aca"])
+            self.starcat_review.set_catalog(self._data.proseco["aca"])
             self.plot.set_catalog(self._data.proseco["catalog"])
 
     def _export_proseco(self):

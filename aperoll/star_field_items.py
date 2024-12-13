@@ -301,6 +301,16 @@ class Centroid(QtW.QGraphicsEllipseItem):
         self.setPen(pen)
         self._line_1.setPen(pen)
         self._line_2.setPen(pen)
+        self._label.setDefaultTextColor(color)
+
+    def set_fiducial(self, fiducial):
+        color = QtG.QColor("red") if fiducial else QtG.QColor("blue")
+        pen = self.pen()
+        pen.setColor(color)
+        self.setPen(pen)
+        self._line_1.setPen(pen)
+        self._line_2.setPen(pen)
+        self._label.setDefaultTextColor(color)
 
 
 class FidLight(QtW.QGraphicsEllipseItem):
@@ -571,9 +581,9 @@ class FieldOfView(QtW.QGraphicsItem):
             | (row > 511)
             | (col < -511)
             | (col > 511)
-            | (self._centroids["IMGFID"])
         )
         for i, centroid in enumerate(self.centroids):
+            centroid.set_fiducial(self._centroids["IMGFID"][i])
             if off_ccd[i]:
                 centroid.setVisible(False)
             else:
