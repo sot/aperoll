@@ -66,6 +66,8 @@ class ProsecoParams(JsonEditor):
     date = property(get_date, set_date)
 
     def set_attitude(self, attitude, emit=True):
+        if attitude is None:
+            return
         # calling self.set_value so I can skip emitting the signal
         self.set_value("att", Quat(attitude).equatorial.tolist(), emit=emit)
 
