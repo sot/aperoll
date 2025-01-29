@@ -373,6 +373,10 @@ class AttitudeWidget(QtW.QWidget):
             roll = off_nominal_roll(attitude, date)
             self._sun_pos.set_values([pitch, yaw, roll])
 
+    def set_read_only(self, read_only=True):
+        self._q.setReadOnly(read_only)
+        self._eq.setReadOnly(read_only)
+
     def _clear(self):
         self._q.reset()
         self._eq.reset()
