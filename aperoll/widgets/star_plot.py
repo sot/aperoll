@@ -660,7 +660,6 @@ class StarField(QtW.QGraphicsScene):
         """
         if self.onboard_attitude_slot == "attitude":
             self.attitude = attitude
-            self.attitude_changed.emit()
         elif self.onboard_attitude_slot == "alternate_attitude":
             self.alternate_attitude = attitude
 
