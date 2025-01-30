@@ -82,8 +82,8 @@ _COMMON_STATES = [
 
 
 class StarView(QtW.QGraphicsView):
-    include_star = QtC.pyqtSignal(int, str, object)
-    include_slot = QtC.pyqtSignal(int, bool)
+    star_included = QtC.pyqtSignal(int, str, object)
+    slot_included = QtC.pyqtSignal(int, bool)
     update_proseco = QtC.pyqtSignal()
 
     def __init__(self, scene=None):
@@ -99,6 +99,17 @@ class StarView(QtW.QGraphicsView):
         self._moving = False
 
         self._draw_frame = False
+
+    def include_slot(self, slot, include):
+        fov = self.scene().main_fov.centroids[slot]
+        alt_fov = self.scene().alternate_fov.centroids[slot]
+        exclude = not include
+        if fov.excluded == exclude and alt_fov.excluded == exclude:
+            # nothing to do
+            return
+        fov.set_excluded(exclude)
+        alt_fov.set_excluded(exclude)
+        self.slot_included.emit(slot, include)
 
     def _get_draw_frame(self):
         return self._draw_frame
@@ -299,15 +310,14 @@ class StarView(QtW.QGraphicsView):
         result = menu.exec_(event.globalPos())
         if result is not None:
             if centroid is not None and result.text().startswith("include slot"):
-                centroid.set_excluded(not result.isChecked())
-                self.include_slot.emit(centroid.imgnum, not centroid.excluded)
+                self.include_slot(centroid.imgnum, result.isChecked())
             elif stars and result.text().split()[0] in ["include", "exclude"]:
                 action, action_type = result.text().split()
                 if action == "include":
                     star.included[action_type] = True if result.isChecked() else None
                 elif action == "exclude":
                     star.included[action_type] = False if result.isChecked() else None
-                self.include_star.emit(
+                self.star_included.emit(
                     star.star["AGASC_ID"], action_type, star.included[action_type]
                 )
             elif result.text() == "Show FOV":
@@ -686,8 +696,8 @@ class StarField(QtW.QGraphicsScene):
 class StarPlot(QtW.QWidget):
     attitude_changed_eq = QtC.pyqtSignal(float, float, float)
     attitude_changed = QtC.pyqtSignal(Quat)
-    include_star = QtC.pyqtSignal(int, str, object)
-    include_slot = QtC.pyqtSignal(int, bool)
+    star_included = QtC.pyqtSignal(int, str, object)
+    slot_included = QtC.pyqtSignal(int, bool)
     update_proseco = QtC.pyqtSignal()
 
     def __init__(self, parent=None):
@@ -715,8 +725,8 @@ class StarPlot(QtW.QWidget):
         self.scene.attitude_changed.connect(self.view.set_item_scale)
         self.scene.changed.connect(self.view.set_visibility)
 
-        self.view.include_star.connect(self.include_star)
-        self.view.include_slot.connect(self.include_slot)
+        self.view.star_included.connect(self.star_included)
+        self.view.slot_included.connect(self.slot_included)
         self.view.update_proseco.connect(self.update_proseco)
 
     def _attitude_changed(self):
@@ -786,6 +796,8 @@ class StarPlot(QtW.QWidget):
     def set_centroids(self, centroids):
         self.scene.set_centroids(centroids)
 
+    def include_slot(self, slot, include):
+        self.view.include_slot(slot, include)
 
 def main():
     from aperoll.utils import get_default_parameters
