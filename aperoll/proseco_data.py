@@ -147,7 +147,9 @@ class ProsecoData:
                     "review_table": aca_review,
                 }
             except Exception as exc:
-                logger.debug(f"ProsecoData failed calling proseco ({type(exc).__name__}): {exc}")
+                logger.debug(
+                    f"ProsecoData failed calling proseco ({type(exc).__name__}): {exc}"
+                )
                 trace = traceback.extract_tb(exc.__traceback__)
                 for step in trace:
                     logger.debug(f"    in {step.filename}:{step.lineno}/{step.name}:")
@@ -167,13 +169,14 @@ class ProsecoData:
                 )
                 return self._dir / "sparkles"
             except Exception as exc:
-                logger.debug(f"ProsecoData failed calling sparkles ({type(exc).__name__}): {exc}")
+                logger.debug(
+                    f"ProsecoData failed calling sparkles ({type(exc).__name__}): {exc}"
+                )
                 trace = traceback.extract_tb(exc.__traceback__)
                 for step in trace:
                     logger.debug(f"    in {step.filename}:{step.lineno}/{step.name}:")
                     logger.debug(f"        {step.line}")
                 raise Exception(f"ProsecoData failed calling sparkles: {exc}") from None
-
 
     def open_export_proseco_dialog(self):
         """

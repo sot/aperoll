@@ -798,6 +798,7 @@ class StarPlot(QtW.QWidget):
     def include_slot(self, slot, include):
         self.view.include_slot(slot, include)
 
+
 def main():
     from aperoll.utils import get_default_parameters
 
