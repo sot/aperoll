@@ -6,7 +6,9 @@ import traceback
 
 import maude
 import numpy as np
+from chandra_aca.drift import get_aca_offsets
 from chandra_aca.transform import (
+    calc_aca_from_targ,
     pixels_to_yagzag,
     yagzag_to_pixels,
 )
@@ -190,9 +192,32 @@ def get_parameters_from_yoshi(filename, obsid=None):
         yoshi_params = contents[0]  # assuming there is only one entry
 
         yoshi_params["date"] = yoshi_params["obs_date"]
-        yoshi_params["ra"] = yoshi_params["ra_targ"]
-        yoshi_params["dec"] = yoshi_params["dec_targ"]
-        yoshi_params["roll"] = yoshi_params["roll_targ"]
+
+        # ra/dec/roll in yoshi files are the target atttitude,
+        # so need to transform to ACA attitude
+        aca_offset_y, aca_offset_z = get_aca_offsets(
+            yoshi_params["detector"],
+            yoshi_params["chip_id"],
+            yoshi_params["chipx"],
+            yoshi_params["chipy"],
+            yoshi_params["obs_date"],
+            -2.5,
+        )
+
+        aca_att = calc_aca_from_targ(
+            [
+                yoshi_params["ra_targ"],
+                yoshi_params["dec_targ"],
+                yoshi_params["roll_targ"],
+            ],
+            y_off=yoshi_params["offset_y"] / 60 + aca_offset_y / 3600,
+            z_off=yoshi_params["offset_z"] / 60 + aca_offset_z / 3600,
+        )
+
+        yoshi_params["ra"], yoshi_params["dec"], yoshi_params["roll"] = (
+            aca_att.equatorial
+        )
+
         yoshi_params["instrument"] = yoshi_params["detector"]
         for key in [
             "obs_date",
