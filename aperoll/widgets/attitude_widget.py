@@ -331,10 +331,7 @@ class AttitudeWidget(QtW.QWidget):
             if emit:
                 self.attitude_cleared.emit()
             return
-        if (
-            not isinstance(attitude, Quat)
-            and len(attitude) == 4
-        ):
+        if not isinstance(attitude, Quat) and len(attitude) == 4:
             attitude = normalize(attitude)
         # this check is to break infinite recursion because in the connections
         q1 = None if attitude is None else Quat(attitude).q
