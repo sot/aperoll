@@ -127,7 +127,7 @@ class CentroidTable(TableWidget):
                 item = self._table[row][col]
                 if colname == "enable":
                     checkbox = self._q_table.cellWidget(row, col)
-                    checkbox.setChecked(item)
+                    checkbox.setChecked(bool(item))
                 else:
                     self._q_table.item(row, col).setText(
                         self.format[colname].format(item)

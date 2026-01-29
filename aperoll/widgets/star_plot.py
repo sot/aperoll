@@ -664,18 +664,22 @@ class StarField(QtW.QGraphicsScene):
             self.alternate_attitude = attitude
 
     def enable_alternate_fov(self, enable=True):
+        enable = bool(enable)
         self.state.enable_alternate_fov = enable
         self.alternate_fov.setVisible(enable)
 
     def show_alternate_fov(self, show=True):
+        show = bool(show)
         if self.state.enable_alternate_fov:
             self.alternate_fov.setVisible(show)
 
     def enable_fov(self, enable=True):
+        enable = bool(enable)
         self.state.enable_fov = enable
         self.main_fov.setVisible(enable)
 
     def show_fov(self, show=True):
+        show = bool(show)
         if self.state.enable_fov:
             self.main_fov.setVisible(show)
 
@@ -684,10 +688,12 @@ class StarField(QtW.QGraphicsScene):
         self.alternate_fov.set_centroids(centroids)
 
     def enable_catalog(self, enable=True):
+        enable = bool(enable)
         self.state.enable_catalog = enable
         self.catalog.setVisible(enable)
 
     def show_catalog(self, show=True):
+        show = bool(show)
         if self.state.enable_catalog:
             self.catalog.setVisible(show)
 
